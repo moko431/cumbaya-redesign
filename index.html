@@ -574,11 +574,12 @@
   mm.querySelectorAll('a').forEach(function(a){a.addEventListener('click',closeM);});
 
   // reveal
-  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.06,rootMargin:'0px 0px -4% 0px'});
-  document.querySelectorAll('.rv,.stagger,.reveal-img').forEach(function(el){io.observe(el);});
-  // safety net: reveal anything already in view shortly after load
-  function safety(){document.querySelectorAll('.rv,.stagger,.reveal-img').forEach(function(el){if(!el.classList.contains('in')){var r=el.getBoundingClientRect();if(r.top<window.innerHeight*1.1&&r.bottom>0){el.classList.add('in');}}});}
-  window.addEventListener('load',function(){setTimeout(safety,600);});
+  var revEls=[].slice.call(document.querySelectorAll('.rv,.stagger,.reveal-img'));
+  function reveal(){var vh=window.innerHeight||800;for(var i=revEls.length-1;i>=0;i--){var el=revEls[i];var r=el.getBoundingClientRect();if(r.top<vh*0.9&&r.bottom>-40){el.classList.add('in');revEls.splice(i,1);}}}
+  window.addEventListener('scroll',reveal,{passive:true});
+  window.addEventListener('resize',reveal,{passive:true});
+  window.addEventListener('load',reveal);
+  reveal(); setTimeout(reveal,300); setTimeout(reveal,900);
   // stagger children delays
   document.querySelectorAll('.stagger').forEach(function(s){[].slice.call(s.children).forEach(function(c,i){c.style.transitionDelay=(i*0.09)+'s';});});
 
